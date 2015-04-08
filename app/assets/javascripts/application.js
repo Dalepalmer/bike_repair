@@ -20,4 +20,8 @@
 //= require angular-resource
 //= require angular-route
 //= require angular-touch
+//= require app
+//= require ng-token-auth
+//= require controllers/user_registrations
+//= require controllers/user_sessions
 //= require_tree .

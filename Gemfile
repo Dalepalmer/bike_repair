@@ -7,8 +7,8 @@ gem 'uglifier'
 gem 'coffee-rails'
 gem 'jquery-rails'
 gem 'turbolinks'
-gem 'devise_token_auth'
 gem 'omniauth'
+gem 'devise_token_auth'
 
 group :development do
   gem 'byebug'
