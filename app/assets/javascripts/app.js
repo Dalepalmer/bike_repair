@@ -1,44 +1,31 @@
+angular.module('bikeRepairApp', ['sessionService','recordService'])
+  .config(['$httpProvider', function($httpProvider){
+        $httpProvider.defaults.headers.common['X-CSRF-Token'] = $('meta[name=csrf-token]').attr('content');
 
-/**
-* @ngdoc overview
-* @name bikeRepairApp
-* @description
-* # bikeRepairApp
-*
-* Main module of the application.
-*/
+        var interceptor = ['$location', '$rootScope', '$q', function($location, $rootScope, $q) {
+            function success(response) {
+                return response
+            };
 
-angular
-.module('bikeRepairApp', [
-'ngAnimate',
-'ngCookies',
-'ngResource',
-'ngRoute',
-'ngSanitize',
-'ngTouch',
-'ng-token-auth'
-])
-.config(function ($routeProvider) {
-  $routeProvider
-  .when('/', {
-    templateUrl: 'views/main.html',
-    controller: 'MainCtrl'
-  })
-  .when('api/auth/sign_in', {
-    templateUrl: 'views/user_sessions/new.html',
-    controller: 'UserSessionCtrl'
-  })
-  .when('/about', {
-    templateUrl: 'views/about.html',
-    controller: 'AboutCtrl'
-  })
-  .otherwise({
-    redirectTo: '/'
-  });
-});
+            function error(response) {
+                if (response.status == 401) {
+                    $rootScope.$broadcast('event:unauthorized');
+                    $location.path('/users/login');
+                    return response;
+                };
+                return $q.reject(response);
+            };
 
-// app.run(['$rootScope', '$location', function($rootScope, $location) {
-//   $rootScope.$on('auth:login-success', function() {
-//     $location.path('/');
-//   });
-// }]);
+            return function(promise) {
+                return promise.then(success, error);
+            };
+        }];
+        $httpProvider.interceptors.push(interceptor);
+  }])
+  .config(['$routeProvider', function($routeProvider){
+    $routeProvider
+      .when('/', {templateUrl:'/home/index.html'})
+      .when('/record', {templateUrl:'/record/index.html', controller:RecordCtrl})
+      .when('/users/login', {templateUrl:'/users/login.html', controller:UsersCtrl})
+      .when('/users/register', {templateUrl:'/users/register.html', controller:UsersCtrl});
+  }]);
